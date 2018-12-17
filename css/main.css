@@ -1,0 +1,10 @@
+body {
+    font-family: Roboto;
+    font-size: 19px;
+    color: white;
+}
+
+#map {
+  height: 200px;
+  width: 100%;
+}
