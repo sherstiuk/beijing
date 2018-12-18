@@ -8,3 +8,8 @@ body {
   height: 200px;
   width: 100%;
 }
+
+svg.leaflet-zoom-animated > g > path {
+   transition-property: fill, fill-opacity, stroke, stroke-opacity, stroke-width;
+   transition-duration: 0.4s;
+}

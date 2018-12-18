@@ -31,8 +31,14 @@
 
       // old map overlay
       var imgBounds = [ [39.94909, 116.3428], [39.8678, 116.4391] ]
-      var a = L.imageOverlay('img/map.jpg', imgBounds).addTo(mymap);
-      mymap.fitBounds(imgBounds);
+      var cut = L.imageOverlay('img/map.png', imgBounds).addTo(mymap);
+      //mymap.fitBounds(imgBounds);
+      cut.id = 'cut';
+
+      // old map overlay
+      var imgBounds = [ [39.94909, 116.3428], [39.8678, 116.4391] ]
+      var full = L.imageOverlay('img/map.jpg', imgBounds).addTo(mymap);
+      full.id = 'full';
 
       let myRequest =
         new Request("https://raw.githubusercontent.com/sherstiuk/beijing/master/data/buildings.geojson");
@@ -43,26 +49,52 @@
       fetch(myRequest)//
         .then(resp => resp.json())
         .then(function(geo) {
-          L.geoJSON(geo, {
+          var geoJSON = L.geoJson(geo, {
               onEachFeature: onEachFeature,
               icon: myIcon
-          }).addTo(mymap);
+          });
+          geoJSON.addTo(mymap);
         });
 
         function onEachFeature(feature, layer) {
             if (feature.properties && feature.properties.name) {
                 layer.bindPopup(feature.properties.name);
             }
+
+            var defaultStyle = {
+              // color: "#FFF59D",
+               weight: 0.5,
+               opacity: 0.6,
+               fillOpacity: 0.5
+            };
+            //layer.setStyle(defaultStyle);
+
             layer.on('mouseover', function (e) {
                 this.openPopup();
+
+                layer.setStyle(
+                   style = {
+                     //color: "#FFEB3B",
+                     weight: 5,
+                     opacity: 0.8,
+                     fillOpacity: 0.1,
+                     //fillColor: "#FFEB3B"
+                    }
+                );
+
+                mymap.removeLayer(full);
             });
-            /*
-            layer.on('mouseout', function (e) {
-                this.closePopup();
+
+            layer.on("mouseout", function() {
+               layer.setStyle(defaultStyle);
+               this.closePopup();
+
+               full.addTo(mymap);
             });
-            */
+
         }
 
+        console.log(L.stamp(cut));
 
 /*
       var reader = new FileReader();
