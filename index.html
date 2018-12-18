@@ -28,29 +28,40 @@
       var mymap = L.map('mapid').setView([39.91, 116.39], 14);
       // applying theme
       L.tileLayer.provider('Thunderforest.Pioneer', {apikey: '97aee903a5d243fa8b38476ea30c271c'}).addTo(mymap);
-      
+
       // old map overlay
       var imgBounds = [ [39.94909, 116.3428], [39.8678, 116.4391] ]
       var a = L.imageOverlay('img/map.jpg', imgBounds).addTo(mymap);
       mymap.fitBounds(imgBounds);
 
       let myRequest =
-        new Request("https://raw.githubusercontent.com/sherstiuk/beijing/master/data/old-beijing-buildings.geojson");
+        new Request("https://raw.githubusercontent.com/sherstiuk/beijing/master/data/buildings.geojson");
       var geo;
+
+      var myIcon = L.divIcon({ popupAnchor: [0, -30] });
 
       fetch(myRequest)//
         .then(resp => resp.json())
         .then(function(geo) {
           L.geoJSON(geo, {
-              onEachFeature: onEachFeature
+              onEachFeature: onEachFeature,
+              icon: myIcon
           }).addTo(mymap);
         });
 
-      function onEachFeature(feature, layer) {
-      if (feature.properties && feature.properties.name) {
-          layer.bindPopup(feature.properties.name);
-      }
-  }
+        function onEachFeature(feature, layer) {
+            if (feature.properties && feature.properties.name) {
+                layer.bindPopup(feature.properties.name);
+            }
+            layer.on('mouseover', function (e) {
+                this.openPopup();
+            });
+            /*
+            layer.on('mouseout', function (e) {
+                this.closePopup();
+            });
+            */
+        }
 
 
 /*
