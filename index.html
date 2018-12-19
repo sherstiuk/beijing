@@ -69,9 +69,13 @@
                 var popupStyle = {
                   maxWidth: '500',
                   className : 'custom',
-                  offset: [0, -10]
+                  offset: [0, -15]
                 }
-                var text = "<b>" + feature.properties.name + "</b>";
+                var text = "<b>" + feature.properties.name;
+                if (((feature.properties.name).toLowerCase().trim()).localeCompare((feature.properties.now).toLowerCase().trim()) != 0) {
+                  text +="  →  now: <i>" + feature.properties.now + "</i>"
+                }
+                text += "</b>";
                 if (feature.properties.descrip) {
                   text += "<br/>"
                    + "<span style=\"width: 100%; background-color: #232528;\">"
