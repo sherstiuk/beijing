@@ -31,6 +31,10 @@
       <div id="mapid" style="width: 100%; height: 90%;"></div>
     </div>
 
+    <div id="bottom" style="height: 30px; margin-top: -55px;">
+        <!--<div style="margin: 0 auto; margin-top: 5px">epfl 2018</span>-->
+    </div>
+
     <script>
       L_DISABLE_3D = true;
       // centering on Beijing old town
@@ -43,9 +47,7 @@
         new Request("https://raw.githubusercontent.com/sherstiuk/beijing/master/data/buildings.geojson");
       var geo;
 
-      var myIcon = L.divIcon({ popupAnchor: [0, -30] });
-
-      var included = [3, 25, 26, 29, 50, 53, 56, 51, 40, 7, 11, 9, 30]; // 54, 49,
+      var included = [3, 25, 26, 29, 50, 53, 7, 11, 9, 30]; // 54, 49,     56, 51, 40,
       var dict = {};
       for (var i = 0; i < included.length; i++) {
         var piece = L.imageOverlay(('img/shapes/' + included[i] + '.png'), imgBounds).addTo(mymap);
@@ -57,14 +59,25 @@
         .then(function(geo) {
           var geoJSON = L.geoJson(geo, {
               onEachFeature: onEachFeature,
-              icon: myIcon
+              //icon: myIcon
           });
           geoJSON.addTo(mymap);
         });
 
         function onEachFeature(feature, layer) {
             if (feature.properties && feature.properties.name) {
-                layer.bindPopup(feature.properties.name);
+                var popupStyle = {
+                  maxWidth: '500',
+                  className : 'custom',
+                  offset: [0, -10]
+                }
+                var text = "<b>" + feature.properties.name + "</b>";
+                if (feature.properties.descrip) {
+                  text += "<br/>"
+                   + "<span style=\"width: 100%; background-color: #232528;\">"
+                   + feature.properties.descrip + "</span>";
+                }
+                layer.bindPopup(text, popupStyle);
             }
 
             var fill = .99;
@@ -72,7 +85,7 @@
 
             var defaultStyle = {
                color: "#1098F7",
-               weight: 2.5,
+               weight: 2,
                opacity: 0.6,
                fillOpacity: fill,
                fillColor: "#2E3532"
@@ -84,7 +97,7 @@
                 if (dict[feature.properties.id]) {
                   mymap.removeLayer(dict[feature.properties.id]);
                 }
-                style = { weight: 6, fillOpacity: 0.01 }
+                style = { weight: 5, fillOpacity: 0.01 }
                 layer.setStyle(style);
 
                 //console.log(feature.properties.id);

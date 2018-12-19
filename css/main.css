@@ -14,3 +14,10 @@ svg.leaflet-zoom-animated > g > path {
    transition-property: fill, fill-opacity, stroke, stroke-opacity, stroke-width;
    transition-duration: 0.4s;
 }
+
+.custom .leaflet-popup-tip,
+.custom .leaflet-popup-content-wrapper {
+    background: #252323;
+    opacity: 0.85;
+    color: #ffffff;
+}
