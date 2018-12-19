@@ -14,31 +14,30 @@
     <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
     <script src="js/leaflet-providers.js"></script>
     <script src="js/leaflet.ajax.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:800|Roboto:900|Staatliches" rel="stylesheet">
 
   </head>
 
-  <body style="background-color: black;">
-    <div id="top" style="width: 100%; height: 70px; margin-botton=-25px;"></div>
-    <div id="map-container" style="width: 99%;">
-      <div id="mapid" style="width: 100%; height: 600px;"></div>
+  <body>
+    <div id="top" >
+      <div id="logo" style="width: 50%; margin: 20px; margin-bottom: 15px;">
+        <span style="margin-right : 5px;"><img src="img/logo.png" width="50px" alt="The Temple of Heaven"></span>
+        <span style="width: 50px; font-size: 28px;"><b>A CENTURY<br/><span style="font-size: 42px;">IN BEIJING</span></b></span>
+      </div>
+    </div>
+
+    <div id="map-container" style="width: 99%; height: 600px;">
+      <div id="mapid" style="width: 100%; height: 90%;"></div>
     </div>
 
     <script>
+      L_DISABLE_3D = true;
       // centering on Beijing old town
       var mymap = L.map('mapid').setView([39.91, 116.39], 14);
       // applying theme
       L.tileLayer.provider('Thunderforest.Pioneer', {apikey: '97aee903a5d243fa8b38476ea30c271c'}).addTo(mymap);
-
-      // old map overlay
-      var imgBounds = [ [39.94909, 116.3428], [39.8678, 116.4391] ]
-      var cut = L.imageOverlay('img/map.png', imgBounds).addTo(mymap);
-      //mymap.fitBounds(imgBounds);
-      cut.id = 'cut';
-
-      // old map overlay
-      var imgBounds = [ [39.94909, 116.3428], [39.8678, 116.4391] ]
-      var full = L.imageOverlay('img/map.jpg', imgBounds).addTo(mymap);
-      full.id = 'full';
+      var imgBounds = [ [39.94909, 116.3428], [39.8678, 116.4391] ];
 
       let myRequest =
         new Request("https://raw.githubusercontent.com/sherstiuk/beijing/master/data/buildings.geojson");
@@ -46,7 +45,14 @@
 
       var myIcon = L.divIcon({ popupAnchor: [0, -30] });
 
-      fetch(myRequest)//
+      var included = [3, 25, 26, 29, 50, 53, 56, 51, 40, 7, 11, 9, 30]; // 54, 49,
+      var dict = {};
+      for (var i = 0; i < included.length; i++) {
+        var piece = L.imageOverlay(('img/shapes/' + included[i] + '.png'), imgBounds).addTo(mymap);
+        dict[included[i]] = piece; //L.stamp(piece);
+      }
+
+      fetch(myRequest)
         .then(resp => resp.json())
         .then(function(geo) {
           var geoJSON = L.geoJson(geo, {
@@ -61,59 +67,42 @@
                 layer.bindPopup(feature.properties.name);
             }
 
+            var fill = .99;
+            if (dict[feature.properties.id]) fill = .05;
+
             var defaultStyle = {
-              // color: "#FFF59D",
-               weight: 0.5,
+               color: "#1098F7",
+               weight: 2.5,
                opacity: 0.6,
-               fillOpacity: 0.5
+               fillOpacity: fill,
+               fillColor: "#2E3532"
             };
-            //layer.setStyle(defaultStyle);
+            layer.setStyle(defaultStyle);
 
             layer.on('mouseover', function (e) {
                 this.openPopup();
+                if (dict[feature.properties.id]) {
+                  mymap.removeLayer(dict[feature.properties.id]);
+                }
+                style = { weight: 6, fillOpacity: 0.01 }
+                layer.setStyle(style);
 
-                layer.setStyle(
-                   style = {
-                     //color: "#FFEB3B",
-                     weight: 5,
-                     opacity: 0.8,
-                     fillOpacity: 0.1,
-                     //fillColor: "#FFEB3B"
-                    }
-                );
-
-                mymap.removeLayer(full);
+                //console.log(feature.properties.id);
             });
 
             layer.on("mouseout", function() {
                layer.setStyle(defaultStyle);
-               this.closePopup();
-
-               full.addTo(mymap);
+               //this.closePopup();
+               if (dict[feature.properties.id]) {
+                 dict[feature.properties.id].addTo(mymap);
+               }
             });
-
         }
 
-        console.log(L.stamp(cut));
-
-/*
-      var reader = new FileReader();
-      reader.onload = function(){
-        if (reader.readyState != 2 || reader.error){
-          return;
-        } else {
-          convertToLayer(reader.result);
-        }
-      }
-      reader.readAsArrayBuffer("data/geodata.zip");
-
-      function convertToLayer(buffer){
-        shp(buffer).then(function(geojson){
-          var layer = L.shapefile(geojson).addTo(mymap);
-          console.log(layer);
-        });
-      }
-*/
+        // old map overlay
+        var cut = L.imageOverlay('img/map.png', imgBounds).addTo(mymap);
+        //mymap.fitBounds(imgBounds);
+        cut.id = 'cut';
 
     </script>
 

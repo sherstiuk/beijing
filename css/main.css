@@ -1,11 +1,12 @@
 body {
-    font-family: Roboto;
-    font-size: 19px;
-    color: white;
+    background-color: #232528;
+    font-family: 'Raleway', sans-serif;
+    font-size: 20px;
+    color: #e9f5fe;
 }
 
 #map {
-  height: 200px;
+  height: 800px;
   width: 100%;
 }
 
