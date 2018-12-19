@@ -40,14 +40,36 @@
       // centering on Beijing old town
       var mymap = L.map('mapid').setView([39.91, 116.39], 14);
       // applying theme
-      L.tileLayer.provider('Thunderforest.Pioneer', {apikey: '97aee903a5d243fa8b38476ea30c271c'}).addTo(mymap);
+	  var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+			attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+		}).addTo(mymap);
+      //L.tileLayer.provider('Thunderforest.Pioneer', {apikey: '97aee903a5d243fa8b38476ea30c271c'}).addTo(mymap);
       var imgBounds = [ [39.94909, 116.3428], [39.8678, 116.4391] ];
 
       let myRequest =
         new Request("https://raw.githubusercontent.com/sherstiuk/beijing/master/data/buildings.geojson");
       var geo;
 
-      var included = [3, 25, 26, 29, 50, 53, 7, 11, 9, 30]; // 54, 49,     56, 51, 40,
+	  var included = [];
+		for (var i = 1; i <= 12; i+=2) {
+			included.push(i);
+		}
+		for (var i = 15; i <= 24; i+=2) {
+			included.push(i);
+		}
+		for (var i = 29; i <= 56; i+=2) {
+			included.push(i);
+		}
+		included.push(8);
+		included.push(26);
+		included.push(40);
+		included.push(50);
+		included.push(30);
+		included.push(48);
+		included.push(52);
+		included.push(54);
+		included.push(56);
+      //var included = [1, 2, 3, 25, 26, 29, 50, 53, 7, 11, 9, 30, 54, 49, 56, 51, 40]; // 54, 49,     56, 51, 40,
       var dict = {};
       for (var i = 0; i < included.length; i++) {
         var piece = L.imageOverlay(('img/shapes/' + included[i] + '.png'), imgBounds).addTo(mymap);
@@ -69,7 +91,7 @@
                 var popupStyle = {
                   maxWidth: '500',
                   className : 'custom',
-                  offset: [0, -15]
+                  offset: [0, -20]
                 }
                 var text = "<b>" + feature.properties.name;
                 if (((feature.properties.name).toLowerCase().trim()).localeCompare((feature.properties.now).toLowerCase().trim()) != 0) {
